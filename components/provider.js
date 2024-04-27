@@ -6,26 +6,36 @@ export function AppProvider({
     children
 }) {
     const [produtos, setProdutos] = useState([
-        { id: 1, nomeProduto: 'Jogar Futebol', descricao: 'Estudar para a Prova', preco: '9.99' },
-        { id: 2, nomeProduto: 'Estudar para a Prova', descricao: 'Estudar para a Prova', preco: '11' }
-    ]);
-
-    const [carrinho, setCarrinho] = useState(0);
-    const adicionarAoCarrinho = (produto) => {
-        const [valorItem, setValorItem] = produto.preco;
-        carrinho = carrinho + valorItem;
-    };
-
-    const removerDoCarrinho = (produto) => {
-        const [valorItem, setValorItem] = produto.preco;
-        carrinho = carrinho - valorItem;
-    };
-    return (
-        <AppContext.Provider
-            value={{ produtos, adicionarAoCarrinho }}
-        >
-            {children}
+        { id: 1, nome: 'Prato Branco', descricao: ' Um prato clássico, elegante e versátil, perfeito para refeições do dia a dia ou ocasiões especiais.', preco: 9.99 },
+        { id: 2, nome: 'Estojo', descricao: ' Feito com materiais duráveis e design inteligente, este estojo é essencial para estudantes de todas as idades.', preco: 11 },
+        { id: 3, nome: 'Necessaire vegana', descricao: ' Feito com materiais duráveis e design inteligente, este estojo é essencial para estudantes de todas as idades.', preco: 21 }
+      ]);
+    
+      const [produtoCarrinho, setProdutoCarrinho] = useState([]);
+      const [carrinhoTotal, setCarrinhoTotal] = useState(0);
+      const [carrinhoIdCounter, setCarrinhoIdCounter] = useState(1);
+    
+      const adicionarAoCarrinho = (produto) => {
+        const produtoNoCarrinho = { ...produto, carrinhoId: carrinhoIdCounter };
+        setProdutoCarrinho(prevProdutoCarrinho => [...prevProdutoCarrinho, produtoNoCarrinho]);
+        setCarrinhoIdCounter(prevCounter => prevCounter + 1);
+        setCarrinhoTotal(prevTotal => prevTotal + produto.preco);
+        
+      };
+      console.log('produtoCarrinho: ',produtoCarrinho );
+      const removerDoCarrinho = (produto) => {
+        // console.log(,produtoCarrinho );
+        // const novoProdutoCarrinho = produtoCarrinho.splice(produtoCarrinho.indexOf(produto.id),1);
+        
+        setProdutoCarrinho(produtoCarrinho.filter(produte => produte.id !== produto.id));
+        console.log('novoProdutoCarrinho: ',produtoCarrinho);
+        setCarrinhoTotal(prevTotal => prevTotal - produto.preco);
+      };
+    
+      return (
+        <AppContext.Provider value={{ produtos, adicionarAoCarrinho, removerDoCarrinho, produtoCarrinho, carrinhoTotal}}>
+          {children}
         </AppContext.Provider>
-    );
+      );
 }
 export const useAppContext = () => useContext(AppContext);
